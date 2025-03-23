@@ -9,6 +9,7 @@ import { useMutation } from "@tanstack/react-query";
 import { signIn } from "next-auth/react";
 import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
@@ -81,12 +82,12 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <Link href="/sign_up" className="underline underline-offset-4">
                 Sign up
-              </a>
-              <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
+              </Link>
+              {/* <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
                 Forgot your password?
-              </a>
+              </a> */}
             </div>
           </form>
         </CardContent>
