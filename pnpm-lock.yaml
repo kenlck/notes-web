@@ -20,6 +20,9 @@ importers:
       '@tanstack/react-query':
         specifier: ^5.69.0
         version: 5.69.0(react@19.0.0)
+      bcryptjs:
+        specifier: ^3.0.2
+        version: 3.0.2
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1
@@ -35,18 +38,27 @@ importers:
       next-auth:
         specifier: 5.0.0-beta.25
         version: 5.0.0-beta.25(next@15.2.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0))(react@19.0.0)
+      next-themes:
+        specifier: ^0.4.6
+        version: 0.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react:
         specifier: ^19.0.0
         version: 19.0.0
       react-dom:
         specifier: ^19.0.0
         version: 19.0.0(react@19.0.0)
+      sonner:
+        specifier: ^2.0.1
+        version: 2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       tailwind-merge:
         specifier: ^3.0.2
         version: 3.0.2
       tw-animate-css:
         specifier: ^1.2.4
         version: 1.2.4
+      zod:
+        specifier: ^3.24.2
+        version: 3.24.2
     devDependencies:
       '@eslint/eslintrc':
         specifier: ^3
@@ -873,6 +885,10 @@ packages:
   balanced-match@1.0.2:
     resolution: {integrity: sha512-3oSeUO0TMV67hN1AmbXsK4yaqU7tjiHlbxRDZOpH0KW9+CeX4bRAaX0Anxt0tx2MrpRpWwQaPwIlISEJhYU5Pw==}
 
+  bcryptjs@3.0.2:
+    resolution: {integrity: sha512-k38b3XOZKv60C4E2hVsXTolJWfkGRMbILBIe2IBITXciy5bOsTKot5kDrf3ZfufQtQOUN5mXceUEpU1rTl9Uog==}
+    hasBin: true
+
   brace-expansion@1.1.11:
     resolution: {integrity: sha512-iCuPHDFgrHX7H2vEI/5xpz07zSHB00TpugqhmYtVmMO6518mCuRMoOYFldEBl0g187ufozdaHgWKcYFb61qGiA==}
 
@@ -1608,6 +1624,12 @@ packages:
       nodemailer:
         optional: true
 
+  next-themes@0.4.6:
+    resolution: {integrity: sha512-pZvgD5L0IEvX5/9GWyHMf3m8BKiVQwsCMHfoFosXtXBMnaS0ZnIJ9ST4b4NqLVKDEm8QBxoNNGNaBv2JNF6XNA==}
+    peerDependencies:
+      react: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+      react-dom: ^16.8 || ^17 || ^18 || ^19 || ^19.0.0-rc
+
   next@15.2.3:
     resolution: {integrity: sha512-x6eDkZxk2rPpu46E1ZVUWIBhYCLszmUY6fvHBFcbzJ9dD+qRX6vcHusaqqDlnY+VngKzKbAiG2iRCkPbmi8f7w==}
     engines: {node: ^18.18.0 || ^19.8.0 || >= 20.0.0}
@@ -1866,6 +1888,12 @@ packages:
   simple-swizzle@0.2.2:
     resolution: {integrity: sha512-JA//kQgZtbuY83m+xT+tXJkmJncGMTFT+C+g2h2R9uxkYIrE2yy9sgmcLhCnw57/WSD+Eh3J97FPEDFnbXnDUg==}
 
+  sonner@2.0.1:
+    resolution: {integrity: sha512-FRBphaehZ5tLdLcQ8g2WOIRE+Y7BCfWi5Zyd8bCvBjiW8TxxAyoWZIxS661Yz6TGPqFQ4VLzOF89WEYhfynSFQ==}
+    peerDependencies:
+      react: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+      react-dom: ^18.0.0 || ^19.0.0 || ^19.0.0-rc
+
   source-map-js@1.2.1:
     resolution: {integrity: sha512-UXWMKhLOwVKb728IUtQPXxfYU+usdybtUrK/8uGE8CQMvrhOpwvzDBwj0QhSL7MQc7vIsISBG8VQ8+IDQxpfQA==}
     engines: {node: '>=0.10.0'}
@@ -2025,6 +2053,9 @@ packages:
   yocto-queue@0.1.0:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
+
+  zod@3.24.2:
+    resolution: {integrity: sha512-lY7CDW43ECgW9u1TcT3IoXHflywfVqDYze4waEz812jR/bZ8FHDsl7pFQoSZTz5N+2NqRXs8GBwnAwo3ZNxqhQ==}
 
 snapshots:
 
@@ -2695,6 +2726,8 @@ snapshots:
   axobject-query@4.1.0: {}
 
   balanced-match@1.0.2: {}
+
+  bcryptjs@3.0.2: {}
 
   brace-expansion@1.1.11:
     dependencies:
@@ -3583,6 +3616,11 @@ snapshots:
       next: 15.2.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0)
       react: 19.0.0
 
+  next-themes@0.4.6(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   next@15.2.3(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
     dependencies:
       '@next/env': 15.2.3
@@ -3914,6 +3952,11 @@ snapshots:
       is-arrayish: 0.3.2
     optional: true
 
+  sonner@2.0.1(react-dom@19.0.0(react@19.0.0))(react@19.0.0):
+    dependencies:
+      react: 19.0.0
+      react-dom: 19.0.0(react@19.0.0)
+
   source-map-js@1.2.1: {}
 
   stable-hash@0.0.5: {}
@@ -4115,3 +4158,5 @@ snapshots:
   word-wrap@1.2.5: {}
 
   yocto-queue@0.1.0: {}
+
+  zod@3.24.2: {}

@@ -6,38 +6,31 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { FormInput } from "@/components/custom/form-input";
 import { useState } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { signIn } from "next-auth/react";
-import { toast } from "sonner";
 import { useRouter } from "next/navigation";
+import { registerUser } from "./action";
 
-export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
+export function SignUpForm({ className, ...props }: React.ComponentProps<"div">) {
   const router = useRouter();
   const [form, setForm] = useState({
+    name: "",
     email: "",
     password: "",
   });
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
-      const res = await signIn("credentials", {
-        ...form,
-        redirect: false,
-      });
-      return res;
-    },
-    onSuccess: (data) => {
-      if (data?.error) {
-        setError("Invalid credentials");
-      } else {
-        toast.success("Login successful");
-        // Redirect to the dashboard or home page
-        router.push("/");
+      const result = await registerUser(form);
+      if (result.error) {
+        throw new Error(result.error);
       }
+      return result;
+    },
+    onSuccess: () => {
+      router.push("/login");
+    },
+    onError: (error: Error) => {
+      setError(error.message);
     },
   });
 
@@ -45,12 +38,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle>Login to your account</CardTitle>
-          <CardDescription>Enter your email below to login to your account</CardDescription>
+          <CardTitle>Create an account</CardTitle>
+          <CardDescription>Enter your information below to create your account</CardDescription>
         </CardHeader>
         <CardContent>
-          <form action={() => mutate()}>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              mutate();
+            }}
+          >
             <div className="flex flex-col gap-6">
+              <FormInput
+                label="Name"
+                id="name"
+                type="text"
+                placeholder="John Doe"
+                required
+                value={form.name}
+                onChange={(e) => setForm((prev) => ({ ...prev, name: e.target.value }))}
+              />
               <FormInput
                 label="Email"
                 id="email"
@@ -61,31 +68,26 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
                 onChange={(e) => setForm((prev) => ({ ...prev, email: e.target.value }))}
               />
               <div className="grid gap-3">
-                <div className="flex items-center justify-between">
-                  <FormInput
-                    label="Password"
-                    id="password"
-                    type="password"
-                    required
-                    value={form.password}
-                    onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
-                  />
-                </div>
+                <FormInput
+                  label="Password"
+                  id="password"
+                  type="password"
+                  required
+                  value={form.password}
+                  onChange={(e) => setForm((prev) => ({ ...prev, password: e.target.value }))}
+                />
                 {error && <span className="text-red-500 text-center">{error}</span>}
               </div>
               <div className="flex flex-col gap-3">
                 <Button isLoading={isPending} type="submit" className="w-full">
-                  Login
+                  Sign Up
                 </Button>
               </div>
             </div>
             <div className="mt-4 text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
-                Sign up
-              </a>
-              <a href="#" className="ml-auto inline-block text-sm underline-offset-4 hover:underline">
-                Forgot your password?
+              Already have an account?{" "}
+              <a href="/login" className="underline underline-offset-4">
+                Login
               </a>
             </div>
           </form>
