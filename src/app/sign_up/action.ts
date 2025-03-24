@@ -39,7 +39,7 @@ export async function registerUser(formData: { name: string; email: string; pass
       },
     });
 
-    const { password: _, ...userWithoutPassword } = user;
+    const { ...userWithoutPassword } = user;
 
     return { success: true, user: userWithoutPassword };
   } catch (error) {

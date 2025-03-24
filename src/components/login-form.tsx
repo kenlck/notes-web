@@ -19,10 +19,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   });
   const [error, setError] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-  };
-
   const { mutate, isPending } = useMutation({
     mutationFn: async () => {
       const res = await signIn("credentials", {
