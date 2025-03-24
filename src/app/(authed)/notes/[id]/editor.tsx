@@ -54,7 +54,7 @@ const extensions = [
     },
     codeBlock: {
       HTMLAttributes: {
-        class: "bg-primary text-primary-foreground p-2 text-sm rounded-md p-1",
+        class: "bg-primary text-primary-foreground p-2 text-sm rounded-md",
       },
     },
     heading: {
