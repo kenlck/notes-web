@@ -1,5 +1,8 @@
+"use client";
+
 import * as React from "react";
 import { ChevronRight, File, Folder, FolderPlusIcon, PlusSquareIcon } from "lucide-react";
+import { api } from "@/trpc/react";
 
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from "@/components/ui/collapsible";
 import {
@@ -10,7 +13,6 @@ import {
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
-  SidebarMenuBadge,
   SidebarMenuButton,
   SidebarMenuItem,
   SidebarMenuSub,
@@ -18,37 +20,26 @@ import {
 } from "@/components/ui/sidebar";
 import { Button } from "./ui/button";
 
-// This is sample data.
-const data = {
-  changes: [
-    {
-      file: "README.md",
-      state: "M",
-    },
-    {
-      file: "api/hello/route.ts",
-      state: "U",
-    },
-    {
-      file: "app/layout.tsx",
-      state: "M",
-    },
-  ],
-  tree: [
-    ["app", ["api", ["hello", ["route.ts"]], "page.tsx", "layout.tsx", ["blog", ["page.tsx"]]]],
-    ["components", ["ui", "button.tsx", "card.tsx"], "header.tsx", "footer.tsx"],
-    ["lib", ["util.ts"]],
-    ["public", "favicon.ico", "vercel.svg"],
-    ".eslintrc.json",
-    ".gitignore",
-    "next.config.js",
-    "tailwind.config.js",
-    "package.json",
-    "README.md",
-  ],
-};
+interface Note {
+  id: string;
+  title: string | null;
+  content: string | null;
+}
+
+interface Folder {
+  id: string;
+  name: string | null;
+  notes: Note[];
+  children: Folder[];
+}
+
+interface DirectoryData {
+  folders: Folder[];
+}
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+  const { data: directory } = api.notes.getDirectory.useQuery();
+
   return (
     <Sidebar {...props}>
       <SidebarHeader>
@@ -65,28 +56,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        {/* <SidebarGroup>
-          <SidebarGroupLabel>Changes</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {data.changes.map((item, index) => (
-                <SidebarMenuItem key={index}>
-                  <SidebarMenuButton>
-                    <File />
-                    {item.file}
-                  </SidebarMenuButton>
-                  <SidebarMenuBadge>{item.state}</SidebarMenuBadge>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup> */}
         <SidebarGroup>
-          <SidebarGroupLabel>Files</SidebarGroupLabel>
+          <SidebarGroupLabel>Folders</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
-              {data.tree.map((item, index) => (
-                <Tree key={index} item={item} />
+              {directory?.folders.map((folder) => (
+                <FolderItem key={folder.id} folder={folder} />
               ))}
             </SidebarMenu>
           </SidebarGroupContent>
@@ -97,35 +72,32 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   );
 }
 
-function Tree({ item }: { item: string | any[] }) {
-  const [name, ...items] = Array.isArray(item) ? item : [item];
-
-  if (!items.length) {
-    return (
-      <SidebarMenuButton isActive={name === "button.tsx"} className="data-[active=true]:bg-transparent">
-        <File />
-        {name}
-      </SidebarMenuButton>
-    );
-  }
-
+function FolderItem({ folder }: { folder: Folder }) {
   return (
     <SidebarMenuItem>
       <Collapsible
         className="group/collapsible [&[data-state=open]>button>svg:first-child]:rotate-90"
-        defaultOpen={name === "components" || name === "ui"}
+        defaultOpen={true}
       >
         <CollapsibleTrigger asChild>
           <SidebarMenuButton>
             <ChevronRight className="transition-transform" />
             <Folder />
-            {name}
+            {folder.name || "Untitled Folder"}
           </SidebarMenuButton>
         </CollapsibleTrigger>
         <CollapsibleContent>
           <SidebarMenuSub>
-            {items.map((subItem, index) => (
-              <Tree key={index} item={subItem} />
+            {/* Render child folders first */}
+            {folder.children.map((childFolder) => (
+              <FolderItem key={childFolder.id} folder={childFolder} />
+            ))}
+            {/* Then render notes */}
+            {folder.notes.map((note) => (
+              <SidebarMenuButton key={note.id}>
+                <File />
+                {note.title || "Untitled Note"}
+              </SidebarMenuButton>
             ))}
           </SidebarMenuSub>
         </CollapsibleContent>
