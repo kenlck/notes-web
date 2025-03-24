@@ -25,6 +25,7 @@ import Highlight from "@tiptap/extension-highlight";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import { ColorHighlightToolbar } from "@/components/toolbars/color-and-highlight";
+import { TextStyleToolbar } from "@/components/toolbars/text-style";
 import { useDebouncedCallback } from "use-debounce";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
@@ -122,6 +123,7 @@ export function TiptapEditor({ content }: { content?: string }) {
             <UndoToolbar />
             <RedoToolbar />
             <Separator orientation="vertical" className="h-7" />
+            <TextStyleToolbar />
             <ColorHighlightToolbar />
             <BoldToolbar />
             <ItalicToolbar />
