@@ -74,10 +74,13 @@ const extensions = [
 export function TiptapEditor({ content }: { content?: string }) {
   const params = useParams();
   const router = useRouter();
+  const utils = api.useUtils();
   const noteId = params.id as string;
   const { mutate: updateNote, isPending } = api.notes.update.useMutation({});
   const { mutate: deleteNote } = api.notes.delete.useMutation({
     onSuccess: () => {
+      // Invalidate directory query to refresh folder/note list
+      utils.notes.getDirectory.invalidate();
       router.push("/");
     },
   });
