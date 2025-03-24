@@ -2,6 +2,8 @@
 
 import * as React from "react";
 import { ChevronRight, File, Folder, FolderPlusIcon, PlusSquareIcon } from "lucide-react";
+import { CreateFolderDialog } from "@/components/create-folder-dialog";
+import { CreateNoteDialog } from "@/components/create-note-dialog";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 
@@ -46,12 +48,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             Notes
           </Link>
           <div className="flex flex-row items-center gap-2 justify-between">
-            <Button className="flex-1">
-              <PlusSquareIcon /> New Note
-            </Button>
-            <Button variant="outline">
-              <FolderPlusIcon />
-            </Button>
+            <CreateNoteDialog
+              folders={directory?.folders ?? []}
+              trigger={
+                <Button className="flex-1">
+                  <PlusSquareIcon /> New Note
+                </Button>
+              }
+            />
+            <CreateFolderDialog
+              folders={directory?.folders ?? []}
+              trigger={
+                <Button variant="outline">
+                  <FolderPlusIcon />
+                </Button>
+              }
+            />
           </div>
         </div>
       </SidebarHeader>

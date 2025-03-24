@@ -3,10 +3,14 @@
 import { Card } from "../../components/ui/card";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
+import { CreateNoteDialog } from "@/components/create-note-dialog";
+import { Button } from "@/components/ui/button";
+import { PlusSquareIcon } from "lucide-react";
 
 export function RecentNotes() {
   const router = useRouter();
   const { data: recentNotes, isLoading } = api.notes.getRecentNotes.useQuery();
+  const { data: directory } = api.notes.getDirectory.useQuery();
   const { mutate } = api.notes.updateLastOpened.useMutation({
     onSuccess: (data) => {
       router.push(`/notes/${data.id}`);
@@ -40,7 +44,18 @@ export function RecentNotes() {
 
   return (
     <div className="space-y-4">
-      <h2 className="text-lg font-semibold">Recent Notes</h2>
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold">Recent Notes</h2>
+        <CreateNoteDialog
+          folders={directory?.folders ?? []}
+          trigger={
+            <Button>
+              <PlusSquareIcon className="mr-2 h-4 w-4" />
+              New Note
+            </Button>
+          }
+        />
+      </div>
       <div className="space-y-2">
         {recentNotes.map((note) => (
           <Card

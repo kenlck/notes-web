@@ -28,6 +28,60 @@ async function getFolderPath(folderId: string | null): Promise<string> {
 }
 
 export const notesRouter = createTRPCRouter({
+  createNote: protectedProcedure
+    .input(
+      z.object({
+        title: z.string().optional(),
+        folderId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.session.user;
+      const path = await getFolderPath(input.folderId ?? null);
+
+      const note = await db.note.create({
+        data: {
+          title: input.title,
+          content: "",
+          userId: user.id,
+          path,
+          folderId: input.folderId,
+          lastOpenedAt: new Date(),
+        },
+        include: {
+          folder: true,
+        },
+      });
+
+      return note;
+    }),
+
+  createFolder: protectedProcedure
+    .input(
+      z.object({
+        name: z.string().min(1),
+        parentId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const userId = ctx.session.user.id;
+      if (!userId) throw new Error("User not authenticated");
+
+      const folder = await db.folder.create({
+        data: {
+          name: input.name,
+          userId,
+          ...(input.parentId && { parentId: input.parentId === "---root" ? null : input.parentId }),
+        },
+        include: {
+          notes: true,
+          children: true,
+        },
+      });
+
+      return folder;
+    }),
+
   getRecentNotes: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
 

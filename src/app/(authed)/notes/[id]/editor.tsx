@@ -25,6 +25,7 @@ import Highlight from "@tiptap/extension-highlight";
 import TextStyle from "@tiptap/extension-text-style";
 import Color from "@tiptap/extension-color";
 import { ColorHighlightToolbar } from "@/components/toolbars/color-and-highlight";
+import { TextStyleToolbar } from "@/components/toolbars/text-style";
 import { useDebouncedCallback } from "use-debounce";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
@@ -74,10 +75,13 @@ const extensions = [
 export function TiptapEditor({ content }: { content?: string }) {
   const params = useParams();
   const router = useRouter();
+  const utils = api.useUtils();
   const noteId = params.id as string;
   const { mutate: updateNote, isPending } = api.notes.update.useMutation({});
   const { mutate: deleteNote } = api.notes.delete.useMutation({
     onSuccess: () => {
+      // Invalidate directory query to refresh folder/note list
+      utils.notes.getDirectory.invalidate();
       router.push("/");
     },
   });
@@ -119,6 +123,7 @@ export function TiptapEditor({ content }: { content?: string }) {
             <UndoToolbar />
             <RedoToolbar />
             <Separator orientation="vertical" className="h-7" />
+            <TextStyleToolbar />
             <ColorHighlightToolbar />
             <BoldToolbar />
             <ItalicToolbar />
@@ -132,7 +137,13 @@ export function TiptapEditor({ content }: { content?: string }) {
             <HardBreakToolbar />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" className="text-destructive" size="icon" onClick={() => setShowDeleteDialog(true)}>
+            <Button
+              variant="ghost"
+              className="text-destructive"
+              title="delete"
+              size="icon"
+              onClick={() => setShowDeleteDialog(true)}
+            >
               <Trash2Icon />
             </Button>
             <SaveStatus isSaving={isPending} lastSaved={lastSaved} />
