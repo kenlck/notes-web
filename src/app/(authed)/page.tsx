@@ -2,7 +2,7 @@
 
 import { RecentNotes } from "@/app/(authed)/recent-notes";
 import { Button } from "@/components/ui/button";
-import { PlusIcon } from "lucide-react";
+import { PlusSquareIcon } from "lucide-react";
 
 export default function Page() {
   return (
@@ -10,7 +10,7 @@ export default function Page() {
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold">Welcome to Notes</h1>
         <Button>
-          <PlusIcon className="mr-2 h-4 w-4" />
+          <PlusSquareIcon className="mr-2 h-4 w-4" />
           New Note
         </Button>
       </div>
