@@ -135,7 +135,13 @@ export function TiptapEditor({ content }: { content?: string }) {
             <HardBreakToolbar />
           </div>
           <div className="flex items-center gap-2">
-            <Button variant="ghost" className="text-destructive" size="icon" onClick={() => setShowDeleteDialog(true)}>
+            <Button
+              variant="ghost"
+              className="text-destructive"
+              title="delete"
+              size="icon"
+              onClick={() => setShowDeleteDialog(true)}
+            >
               <Trash2Icon />
             </Button>
             <SaveStatus isSaving={isPending} lastSaved={lastSaved} />

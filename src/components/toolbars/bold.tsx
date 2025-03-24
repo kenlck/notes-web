@@ -7,10 +7,10 @@ import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { cn } from "@/lib/utils";
 import { useToolbar } from "@/components/toolbars/toolbar-provider";
-import type { Extension } from "@tiptap/core";
-import type { StarterKitOptions } from "@tiptap/starter-kit";
+// import type { Extension } from "@tiptap/core";
+// import type { StarterKitOptions } from "@tiptap/starter-kit";
 
-type StarterKitExtensions = Extension<StarterKitOptions, any>;
+// type StarterKitExtensions = Extension<StarterKitOptions, any>;
 
 type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: "ghost";
@@ -26,6 +26,7 @@ const BoldToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Button
             variant="ghost"
             size="icon"
+            title="bold"
             className={cn("h-8 w-8", editor?.isActive("bold") && "bg-accent", className)}
             onClick={(e) => {
               editor?.chain().focus().toggleBold().run();

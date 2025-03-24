@@ -17,6 +17,7 @@ const UndoToolbar = React.forwardRef<HTMLButtonElement, ButtonProps>(
           <Button
             variant="ghost"
             size="icon"
+            title="undo"
             className={cn("h-8 w-8", className)}
             onClick={(e) => {
               editor?.chain().focus().undo().run();
