@@ -2,6 +2,9 @@
 
 import { useState } from "react";
 import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from "@/components/ui/dialog";
+import { useRouter } from "next/navigation";
 import { BlockquoteToolbar } from "@/components/toolbars/blockquote";
 import { BoldToolbar } from "@/components/toolbars/bold";
 import { BulletListToolbar } from "@/components/toolbars/bullet-list";
@@ -25,6 +28,7 @@ import { ColorHighlightToolbar } from "@/components/toolbars/color-and-highlight
 import { useDebouncedCallback } from "use-debounce";
 import { api } from "@/trpc/react";
 import { useParams } from "next/navigation";
+import { Trash2Icon } from "lucide-react";
 
 const extensions = [
   StarterKit.configure({
@@ -69,8 +73,15 @@ const extensions = [
 
 export function TiptapEditor({ content }: { content?: string }) {
   const params = useParams();
+  const router = useRouter();
   const noteId = params.id as string;
   const { mutate: updateNote, isPending } = api.notes.update.useMutation({});
+  const { mutate: deleteNote } = api.notes.delete.useMutation({
+    onSuccess: () => {
+      router.push("/");
+    },
+  });
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   // const [isSaving, setIsSaving] = useState(false);
   const [lastSaved, setLastSaved] = useState<Date | null>(null);
 
@@ -120,7 +131,37 @@ export function TiptapEditor({ content }: { content?: string }) {
             <BlockquoteToolbar />
             <HardBreakToolbar />
           </div>
-          <SaveStatus isSaving={isPending} lastSaved={lastSaved} />
+          <div className="flex items-center gap-2">
+            <Button variant="ghost" className="text-destructive" size="icon" onClick={() => setShowDeleteDialog(true)}>
+              <Trash2Icon />
+            </Button>
+            <SaveStatus isSaving={isPending} lastSaved={lastSaved} />
+          </div>
+
+          <Dialog open={showDeleteDialog} onOpenChange={setShowDeleteDialog}>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Delete Note</DialogTitle>
+                <DialogDescription>
+                  Are you sure you want to delete this note? This action cannot be undone.
+                </DialogDescription>
+              </DialogHeader>
+              <div className="flex justify-end gap-2">
+                <Button variant="outline" onClick={() => setShowDeleteDialog(false)}>
+                  Cancel
+                </Button>
+                <Button
+                  variant="destructive"
+                  onClick={() => {
+                    deleteNote({ id: noteId });
+                    setShowDeleteDialog(false);
+                  }}
+                >
+                  Delete
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </ToolbarProvider>
       </div>
       <div

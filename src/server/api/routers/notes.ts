@@ -190,4 +190,17 @@ export const notesRouter = createTRPCRouter({
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
   }),
+
+  delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const user = ctx.session.user;
+
+    await db.note.delete({
+      where: {
+        id: input.id,
+        userId: user.id,
+      },
+    });
+
+    return { success: true };
+  }),
 });
