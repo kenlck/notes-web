@@ -1,14 +1,17 @@
 "use client";
 
-import { useState } from "react";
 import { Card } from "../../components/ui/card";
-import { Button } from "../../components/ui/button";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
 
 export function RecentNotes() {
   const router = useRouter();
   const { data: recentNotes, isLoading } = api.notes.getRecentNotes.useQuery();
+  const { mutate } = api.notes.updateLastOpened.useMutation({
+    onSuccess: (data) => {
+      router.push(`/notes/${data.id}`);
+    },
+  });
 
   if (isLoading) {
     return (
@@ -44,15 +47,22 @@ export function RecentNotes() {
             key={note.id}
             className="p-4 hover:bg-gray-50 cursor-pointer transition-colors"
             onClick={() => {
-              api.notes.updateLastOpened.useMutation().mutate({ noteId: note.id });
-              router.push(`/notes/${note.id}`);
+              mutate({ noteId: note.id });
             }}
           >
             <h3 className="font-medium">{note.title || "Untitled Note"}</h3>
-            <p className="text-sm text-gray-500 truncate mt-1">{note.content || "No content"}</p>
+            <div
+              className="text-sm text-gray-500 mt-1 line-clamp-2 overflow-hidden"
+              dangerouslySetInnerHTML={{ __html: note.content || "<em>No content</em>" }}
+            />
             <div className="text-xs text-gray-400 mt-2">
               {note.folder?.name && <span className="mr-2">In: {note.folder.name}</span>}
-              Last opened: {note.lastOpenedAt ? new Date(note.lastOpenedAt).toLocaleDateString() : "Never"}
+              {note.lastOpenedAt
+                ? new Date(note.lastOpenedAt).toLocaleString(undefined, {
+                    dateStyle: "short",
+                    timeStyle: "short",
+                  })
+                : "Never"}
             </div>
           </Card>
         ))}

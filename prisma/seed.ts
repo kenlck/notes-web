@@ -37,6 +37,7 @@ async function main() {
             title: "Meeting Notes",
             content: "- Discuss Q2 goals\n- Review project timeline\n- Team updates",
             userId: user1.id,
+            path: "/Work",
           },
         ],
       },
@@ -44,7 +45,7 @@ async function main() {
   });
 
   // Create nested folders under Work
-  const projectsFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "Projects",
       userId: user1.id,
@@ -55,13 +56,14 @@ async function main() {
             title: "Project Ideas",
             content: "1. Mobile app redesign\n2. API optimization\n3. New dashboard features",
             userId: user1.id,
+            path: "/Work/Projects",
           },
         ],
       },
     },
   });
 
-  const documentsFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "Documents",
       userId: user1.id,
@@ -72,6 +74,7 @@ async function main() {
             title: "Team Guidelines",
             content: "1. Code review process\n2. Meeting schedules\n3. Communication channels",
             userId: user1.id,
+            path: "/Work/Documents",
           },
         ],
       },
@@ -87,7 +90,7 @@ async function main() {
   });
 
   // Create nested folders under Personal
-  const shoppingFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "Shopping",
       userId: user1.id,
@@ -98,13 +101,14 @@ async function main() {
             title: "Shopping List",
             content: "- Groceries\n- New laptop\n- Office supplies",
             userId: user1.id,
+            path: "/Personal/Shopping",
           },
         ],
       },
     },
   });
 
-  const goalsFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "Goals",
       userId: user1.id,
@@ -115,6 +119,7 @@ async function main() {
             title: "2025 Goals",
             content: "- Learn TypeScript\n- Exercise 3x per week\n- Read more books",
             userId: user1.id,
+            path: "/Personal/Goals",
           },
         ],
       },
@@ -130,7 +135,7 @@ async function main() {
   });
 
   // Create nested folders under Study
-  const mathFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "Mathematics",
       userId: user2.id,
@@ -141,13 +146,14 @@ async function main() {
             title: "Calculus Notes",
             content: "Calculus:\n- Derivatives\n- Integrals\n- Limits",
             userId: user2.id,
+            path: "/Study/Mathematics",
           },
         ],
       },
     },
   });
 
-  const historyFolder = await prisma.folder.create({
+  await prisma.folder.create({
     data: {
       name: "History",
       userId: user2.id,
@@ -158,6 +164,7 @@ async function main() {
             title: "World War II",
             content: "Timeline:\n1939 - War begins\n1941 - Pearl Harbor\n1945 - War ends",
             userId: user2.id,
+            path: "/Study/History",
           },
         ],
       },
