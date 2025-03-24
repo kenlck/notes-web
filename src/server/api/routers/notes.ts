@@ -174,6 +174,7 @@ export const notesRouter = createTRPCRouter({
   getDirectory: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
 
+    // First get all folders
     const folders = await db.folder.findMany({
       where: {
         userId: user.id,
@@ -215,8 +216,23 @@ export const notesRouter = createTRPCRouter({
       },
     });
 
+    // Get root-level notes (notes without a folder)
+    const rootNotes = await db.note.findMany({
+      where: {
+        userId: user.id,
+        folderId: null, // Only get notes that don't belong to any folder
+      },
+      select: {
+        id: true,
+        title: true,
+        content: true,
+        path: true,
+      },
+    });
+
     return {
       folders,
+      rootNotes,
     };
   }),
 

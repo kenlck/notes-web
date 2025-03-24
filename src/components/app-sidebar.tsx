@@ -28,6 +28,7 @@ interface Note {
   id: string;
   title: string | null;
   content: string | null;
+  path: string | null;
 }
 
 interface Folder {
@@ -39,6 +40,12 @@ interface Folder {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { data: directory } = api.notes.getDirectory.useQuery();
+  const router = useRouter();
+  const { mutate } = api.notes.updateLastOpened.useMutation({
+    onSuccess: (data) => {
+      router.push(`/notes/${data.id}`);
+    },
+  });
 
   return (
     <Sidebar {...props}>
@@ -52,7 +59,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
               folders={directory?.folders ?? []}
               trigger={
                 <Button className="flex-1">
-                  <PlusSquareIcon /> New Note
+                  <PlusSquareIcon className="mr-2 h-4 w-4" /> New Note
                 </Button>
               }
             />
@@ -68,16 +75,40 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </div>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Folders</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {directory?.folders.map((folder) => (
-                <FolderItem key={folder.id} folder={folder} />
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {/* Root Notes Section */}
+        {directory?.rootNotes && directory.rootNotes.length > 0 && (
+          <SidebarGroup>
+            <SidebarGroupLabel>Notes</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {directory.rootNotes.map((note) => (
+                  <SidebarMenuButton
+                    key={note.id}
+                    className="cursor-pointer"
+                    onClick={() => mutate({ noteId: note.id })}
+                  >
+                    <File />
+                    {note.title || "Untitled Note"}
+                  </SidebarMenuButton>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
+
+        {/* Folders Section */}
+        {directory?.folders && directory.folders.length > 0 && (
+          <SidebarGroup className="-mt-6">
+            {/* <SidebarGroupLabel>Folders</SidebarGroupLabel> */}
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {directory.folders.map((folder) => (
+                  <FolderItem key={folder.id} folder={folder} />
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        )}
       </SidebarContent>
       <SidebarRail />
     </Sidebar>
@@ -112,14 +143,12 @@ function FolderItem({ folder }: { folder: Folder }) {
               <FolderItem key={childFolder.id} folder={childFolder} />
             ))}
             {/* Then render notes */}
-            {folder.notes.map((note) => {
-              return (
-                <SidebarMenuButton key={note.id} className="cursor-pointer" onClick={() => mutate({ noteId: note.id })}>
-                  <File />
-                  {note.title || "Untitled Note"}
-                </SidebarMenuButton>
-              );
-            })}
+            {folder.notes.map((note) => (
+              <SidebarMenuButton key={note.id} className="cursor-pointer" onClick={() => mutate({ noteId: note.id })}>
+                <File />
+                {note.title || "Untitled Note"}
+              </SidebarMenuButton>
+            ))}
           </SidebarMenuSub>
         </CollapsibleContent>
       </Collapsible>

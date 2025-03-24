@@ -36,7 +36,18 @@ export function RecentNotes() {
   if (!recentNotes?.length) {
     return (
       <div className="space-y-4">
-        <h2 className="text-lg font-semibold">Recent Notes</h2>
+        <div className="flex items-center justify-between">
+          <h2 className="text-lg font-semibold">Recent Notes</h2>
+          <CreateNoteDialog
+            folders={directory?.folders ?? []}
+            trigger={
+              <Button>
+                <PlusSquareIcon className="mr-2 h-4 w-4" />
+                New Note
+              </Button>
+            }
+          />
+        </div>
         <Card className="p-4 text-center text-gray-500">No recent notes found</Card>
       </div>
     );
