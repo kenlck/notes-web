@@ -3,6 +3,30 @@ import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "@/server/api/trpc";
 import { db } from "@/lib/prisma";
 
+// Utility function to get the full path for a folder
+async function getFolderPath(folderId: string | null): Promise<string> {
+  if (!folderId) return "/";
+
+  const path: string[] = [];
+  let currentFolder = await db.folder.findUnique({
+    where: { id: folderId },
+    select: { id: true, name: true, parentId: true },
+  });
+
+  while (currentFolder) {
+    if (currentFolder.name) {
+      path.unshift(currentFolder.name);
+    }
+    if (!currentFolder.parentId) break;
+    currentFolder = await db.folder.findUnique({
+      where: { id: currentFolder.parentId },
+      select: { id: true, name: true, parentId: true },
+    });
+  }
+
+  return path.length ? `/${path.join("/")}` : "/";
+}
+
 export const notesRouter = createTRPCRouter({
   getRecentNotes: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
@@ -11,7 +35,15 @@ export const notesRouter = createTRPCRouter({
       where: {
         userId: user.id,
       },
-      orderBy: [{ lastOpenedAt: "desc" }, { updatedAt: "desc" }],
+      orderBy: [
+        {
+          lastOpenedAt: {
+            sort: "desc",
+            nulls: "last",
+          },
+        },
+        { updatedAt: "desc" },
+      ],
       take: 3,
       select: {
         id: true,
@@ -19,6 +51,7 @@ export const notesRouter = createTRPCRouter({
         content: true,
         lastOpenedAt: true,
         updatedAt: true,
+        path: true,
         folder: {
           select: {
             id: true,
@@ -53,6 +86,37 @@ export const notesRouter = createTRPCRouter({
     };
   }),
 
+  update: protectedProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        content: z.string(),
+        folderId: z.string().optional(),
+      })
+    )
+    .mutation(async ({ ctx, input }) => {
+      const user = ctx.session.user;
+      const path = await getFolderPath(input.folderId ?? null);
+
+      const note = await db.note.update({
+        where: {
+          id: input.id,
+          userId: user.id,
+        },
+        data: {
+          content: input.content,
+          updatedAt: new Date(),
+          path,
+          ...(input.folderId && { folderId: input.folderId }),
+        },
+        include: {
+          folder: true,
+        },
+      });
+
+      return note;
+    }),
+
   getDirectory: protectedProcedure.query(async ({ ctx }) => {
     const user = ctx.session.user;
 
@@ -67,6 +131,7 @@ export const notesRouter = createTRPCRouter({
             id: true,
             title: true,
             content: true,
+            path: true,
           },
         },
         children: {
@@ -76,6 +141,7 @@ export const notesRouter = createTRPCRouter({
                 id: true,
                 title: true,
                 content: true,
+                path: true,
               },
             },
             children: {
@@ -85,6 +151,7 @@ export const notesRouter = createTRPCRouter({
                     id: true,
                     title: true,
                     content: true,
+                    path: true,
                   },
                 },
               },
@@ -99,7 +166,41 @@ export const notesRouter = createTRPCRouter({
     };
   }),
 
+  getNotePath: protectedProcedure.input(z.object({ noteId: z.string() })).query(async ({ ctx, input }) => {
+    const user = ctx.session.user;
+
+    const note = await db.note.findUnique({
+      where: {
+        id: input.noteId,
+        userId: user.id,
+      },
+      select: {
+        title: true,
+        path: true,
+      },
+    });
+
+    if (!note) {
+      throw new Error("Note not found");
+    }
+
+    return note;
+  }),
+
   getSecretMessage: protectedProcedure.query(() => {
     return "you can now see this secret message!";
+  }),
+
+  delete: protectedProcedure.input(z.object({ id: z.string() })).mutation(async ({ ctx, input }) => {
+    const user = ctx.session.user;
+
+    await db.note.delete({
+      where: {
+        id: input.id,
+        userId: user.id,
+      },
+    });
+
+    return { success: true };
   }),
 });
